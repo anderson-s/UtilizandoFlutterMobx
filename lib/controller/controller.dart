@@ -4,17 +4,17 @@ part "controller.g.dart";
 class ControllerMobx = Controller with _$ControllerMobx;
 
 abstract class Controller with Store {
-  // Controller() {
-  //   autorun((_) {
-  //     emailSenha;
-  //   });
-  // }
-
   @observable
   String email = "";
 
   @observable
   String senha = "";
+
+  @observable
+  bool carregando = false;
+
+  @observable
+  bool usuarioLogado = false;
 
   @action
   void setEmail(String emailF) => email = emailF;
@@ -26,5 +26,19 @@ abstract class Controller with Store {
   String get emailSenha => "\nEmail: $email\nSenha: $senha";
 
   @computed
-  bool get formularioValido => (email.contains("@") && email.length > 5) && (senha.length >= 6);
+  bool get formularioValido =>
+      (email.contains("@") && email.length > 5) && (senha.length >= 6);
+
+  @action
+  Future<void> logar() async {
+    carregando = true;
+
+    await Future.delayed(
+      const Duration(
+        seconds: 3,
+      ),
+    );
+    carregando = false;
+    usuarioLogado = true;
+  }
 }

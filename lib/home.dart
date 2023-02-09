@@ -1,7 +1,6 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import "package:mobx/mobx.dart";
 import 'package:utilizando_mobx/controller/controller.dart';
 
 class Home extends StatefulWidget {
@@ -13,8 +12,28 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   ControllerMobx controller = ControllerMobx();
+  late ReactionDisposer _disposer;
   bool mostrar = true;
   int contador = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _disposer = reaction(
+      (_) => controller.usuarioLogado,
+      (valor) {
+        print(valor);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _disposer.reaction.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,25 +41,7 @@ class _HomeState extends State<Home> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(
-            //     16,
-            //   ),
-            //   child: Observer(
-            //     builder: (_) {
-            //       return Text(
-            //         controller.contador.toString(),
-            //         style: const TextStyle(
-            //           color: Colors.black,
-            //           fontSize: 20,
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
@@ -84,7 +85,6 @@ class _HomeState extends State<Home> {
                 );
               },
             ),
-
             Padding(
               padding: const EdgeInsets.all(
                 16,
@@ -92,8 +92,18 @@ class _HomeState extends State<Home> {
               child: Observer(
                 builder: (context) {
                   return ElevatedButton(
-                    onPressed: controller.formularioValido ? () {} : null,
-                    child: const Text("Logar"),
+                    onPressed: controller.formularioValido
+                        ? () {
+                            controller.logar();
+                          }
+                        : null,
+                    child: controller.carregando
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          )
+                        : const Text(
+                            "Logar",
+                          ),
                   );
                 },
               ),
