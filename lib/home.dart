@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import "package:mobx/mobx.dart";
 import 'package:utilizando_mobx/controller/controller.dart';
+import 'package:utilizando_mobx/principal.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -23,7 +24,16 @@ class _HomeState extends State<Home> {
     _disposer = reaction(
       (_) => controller.usuarioLogado,
       (valor) {
-        print(valor);
+        if (valor) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const Principal();
+              },
+            ),
+          );
+        }
       },
     );
   }
